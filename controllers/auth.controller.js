@@ -1,6 +1,7 @@
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { generateTokens } from "../utils/generateTokns.js";
 
 export const signup = async (req, res) => {
   const { name, email, password } = req.body;
@@ -27,21 +28,10 @@ export const signup = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = await User.create({
+    await User.create({
       name,
       email,
       password: hashedPassword,
-    });
-
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
-    });
-
-    res.cookie("jwt-ecommerce", token, {
-      httpOnly: true, // Prevent client-side access, xss attacks
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-      secure: true,
-      sameSite: "none", // Prevent CSRF attacks
     });
 
     res.status(201).json({
@@ -78,15 +68,13 @@ export const login = async (req, res) => {
         .json({ success: false, message: "Invalid email or password" });
     }
 
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
-    });
+    const { token } = generateTokens(user._id);
 
-    await res.cookie("jwt-ecommerce", token, {
+    res.cookie("jwt-ecommerce", token, {
       httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
       maxAge: 7 * 24 * 60 * 60 * 1000,
-      secure: true,
-      sameSite: "none",
     });
 
     res.status(200).json({
