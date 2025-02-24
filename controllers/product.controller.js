@@ -1,3 +1,4 @@
+import { connectDB } from "../lib/mongodb.js";
 import Product from "../models/product.model.js";
 import mongoose from "mongoose";
 
@@ -11,6 +12,8 @@ export const createProduct = async (req, res) => {
   }
 
   try {
+    await connectDB();
+
     const product = new Product({
       name,
       description,
@@ -34,11 +37,7 @@ export const createProduct = async (req, res) => {
 
 export const getProducts = async (req, res) => {
   try {
-    if (!global.mongooseConnection) {
-      return res
-        .status(500)
-        .json({ success: false, message: "Database not connected" });
-    }
+    await connectDB();
 
     const products = await Product.find().select("-__v").lean();
 
@@ -60,6 +59,8 @@ export const updateProduct = async (req, res) => {
   }
 
   try {
+    await connectDB();
+
     const updatedProduct = await Product.findByIdAndUpdate(id, product, {
       new: true,
     });
@@ -84,6 +85,8 @@ export const deleteProduct = async (req, res) => {
   }
 
   try {
+    await connectDB();
+
     await Product.findByIdAndDelete(id);
 
     res

@@ -1,11 +1,13 @@
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import { generateTokens } from "../utils/generateTokns.js";
+import { generateTokens } from "../utils/generateTokens.js";
+import { connectDB } from "../lib/mongodb.js";
 
 export const signup = async (req, res) => {
   const { name, email, password } = req.body;
   try {
+    await connectDB();
+
     if (!name || !email || !password) {
       return res
         .status(400)
@@ -48,6 +50,8 @@ export const login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
+    await connectDB();
+
     if (!email || !password) {
       return res
         .status(400)
