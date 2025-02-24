@@ -34,7 +34,14 @@ export const createProduct = async (req, res) => {
 
 export const getProducts = async (req, res) => {
   try {
-    const products = await Product.find();
+    if (!global.mongooseConnection) {
+      return res
+        .status(500)
+        .json({ success: false, message: "Database not connected" });
+    }
+
+    const products = await Product.find().select("-__v").lean();
+
     res.status(200).json({ success: true, data: products });
   } catch (error) {
     console.error("Error fetching products:", error);
