@@ -1,13 +1,11 @@
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
+import { connectDB } from "../config/db.js";
 import { generateTokens } from "../utils/generateTokens.js";
-import { connectDB } from "../lib/mongodb.js";
 
 export const signup = async (req, res) => {
   const { name, email, password } = req.body;
   try {
-    await connectDB();
-
     if (!name || !email || !password) {
       return res
         .status(400)
@@ -50,8 +48,6 @@ export const login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    await connectDB();
-
     if (!email || !password) {
       return res
         .status(400)
@@ -72,7 +68,7 @@ export const login = async (req, res) => {
         .json({ success: false, message: "Invalid email or password" });
     }
 
-    const { token } = generateTokens(user._id);
+    const token = generateTokens(user._id);
 
     res.cookie("jwt-ecommerce", token, {
       httpOnly: true,

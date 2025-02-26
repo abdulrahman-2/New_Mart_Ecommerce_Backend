@@ -3,7 +3,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import compression from "compression";
 import dotenv from "dotenv";
-import { connectDB } from "./lib/mongodb.js";
+import { connectDB } from "./config/db.js";
 import productRoutes from "./routes/product.route.js";
 import authRoutes from "./routes/auth.route.js";
 
@@ -24,10 +24,12 @@ app.use(
   })
 );
 
+// Connect to MongoDB
+connectDB();
+
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 
-app.listen(PORT, async () => {
-  await connectDB();
+app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
