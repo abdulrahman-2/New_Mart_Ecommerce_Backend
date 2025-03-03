@@ -19,7 +19,11 @@ app.use(compression());
 
 app.use(
   cors({
-    origin: ["http://localhost:3000", process.env.CLIENT_URL],
+    origin: [
+      "http://localhost:3000",
+      process.env.CLIENT_URL1,
+      process.env.CLIENT_URL2,
+    ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
