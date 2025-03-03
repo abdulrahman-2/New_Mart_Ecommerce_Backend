@@ -7,12 +7,11 @@ export const createPayment = async (req, res) => {
     price_data: {
       currency: "usd",
       product_data: {
-        name: product.name,
-        images: [product.image],
+        name: product.name || product.title,
+        description: product.description,
+        images: product.images || [product.image],
       },
-      unit_amount: Math.round(
-        product.price * 100 * (1 - product.discount / 100)
-      ),
+      unit_amount: Math.round(product.price * 100),
     },
     quantity: product.quantity,
   }));
@@ -32,3 +31,4 @@ export const createPayment = async (req, res) => {
     return res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
